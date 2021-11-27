@@ -29,10 +29,7 @@ namespace ServerApi_AsymetricEncryption.JWE_DEMO
             });
 
             services.AddMemoryCache();
-            services.AddJwksManager(o => 
-            {
-                o.
-            });
+            services.AddJwksManager();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -50,6 +47,7 @@ namespace ServerApi_AsymetricEncryption.JWE_DEMO
             app.UseAuthorization();
 
             app.UseJwksDiscovery();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

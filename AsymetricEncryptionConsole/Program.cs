@@ -15,9 +15,7 @@ namespace AsymetricEncryptionConsole
         private static readonly HttpClient Client = new();
         static async Task Main(string[] args)
         {            
-            var bytesLengh = 2048;
-            var tokenHandler = new JwtSecurityTokenHandler();
-
+            //Busca chave publica para gerar o token
             var key = await LoadKeys();
 
             //Parametros recomendados pela RFC do JWE
@@ -25,6 +23,7 @@ namespace AsymetricEncryptionConsole
                                                           alg: SecurityAlgorithms.RsaOAEP, 
                                                           enc: SecurityAlgorithms.Aes128CbcHmacSha256);
 
+            //Token descriptor
             var tokenJwt = new SecurityTokenDescriptor()
             {
                 Issuer = "www.andersongabriel.dev",
@@ -37,25 +36,13 @@ namespace AsymetricEncryptionConsole
                 EncryptingCredentials = encryptDetail
             };
 
+            //Create Token
+            var tokenHandler = new JwtSecurityTokenHandler();
             var token = tokenHandler.CreateToken(tokenJwt);
             var jwe = tokenHandler.WriteToken(token);
 
             Console.WriteLine(jwe);
-
-            var chaveDescriptografia = new EncryptingCredentials(key: key,
-                                                          alg: SecurityAlgorithms.RsaOAEP,
-                                                          enc: SecurityAlgorithms.Aes128CbcHmacSha256);
-
-            var handler = new JsonWebTokenHandler();
-            var result = handler.ValidateToken(jwe, new TokenValidationParameters()
-            {
-                ValidIssuer = "www.andersongabriel.dev",
-                ValidAudience = "cartao-credito",
-                RequireSignedTokens = false,
-                TokenDecryptionKey = chaveDescriptografia.Key
-
-            });
-
+                       
             Console.ReadLine();
         }
 

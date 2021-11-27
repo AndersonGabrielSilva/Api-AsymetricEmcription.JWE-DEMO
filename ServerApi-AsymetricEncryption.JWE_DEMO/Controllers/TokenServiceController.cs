@@ -26,12 +26,15 @@ namespace ServerApi_AsymetricEncryption.JWE_DEMO.Controllers
         [HttpGet]
         public IActionResult Get(string jwe)
         {
+            //Busca chave private corrente
             var key = jsonWebKeySetService.GetCurrentEncryptingCredentials();
+            var teste = key.Enc;
 
             var chaveDescriptografia = new EncryptingCredentials(key: key.Key,
                                                                  alg: SecurityAlgorithms.RsaOAEP,
                                                                  enc: SecurityAlgorithms.Aes128CbcHmacSha256);
 
+            //Valida Token
             var handler = new JsonWebTokenHandler();
             var result = handler.ValidateToken(jwe, new TokenValidationParameters()
             {
@@ -39,13 +42,10 @@ namespace ServerApi_AsymetricEncryption.JWE_DEMO.Controllers
                 ValidAudience = "cartao-credito",
                 RequireSignedTokens = false,
                 TokenDecryptionKey = chaveDescriptografia.Key
-
             });
 
             if (result.IsValid)
-            {
                 return Ok(result.Claims);
-            }
 
             return BadRequest("Token inválido");
         }
